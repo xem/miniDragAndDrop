@@ -23,7 +23,7 @@
 <p>Dragged elements dropped outside of drop containers are deleted.
 
 <style>
-* { margin: 0; padding; 0; box-sizing: border-box; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; user-select: none; touch-action: none; }
+* { margin: 0; padding; 0; box-sizing: border-box; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
 .drag { cursor: move;font-size: 12px; text-align: center; padding: 10px; border-radius: 50%; display: inline-block; vertical-align: top; background: #abc; width: 10vw; height: 10vw; border: 2px solid; margin: .5vw; }
 .drag span { background: #def }
 body > div { display: inline-block; vertical-align: top; width: 45vw; height: 40vh; border: 2px solid; margin: 1vw; padding: 1vw; }
@@ -31,86 +31,52 @@ body > div { display: inline-block; vertical-align: top; width: 45vw; height: 40
 
 <script>
 (D=e=>{
-  pointerdown=e=>{
-    e.preventDefault();
+  addEventListener("mousedown",e=>{
     D.w = 1;
-    D.g = null;
-    D.n = null;
-    if(e.touches){
-      D.g = document.elementFromPoint(
-        e.touches[0].pageX,
-        e.touches[0].pageY
-      );
-    }
-    else {
-      D.g = e.target;
-    }
+    D.g = e.target;
+    D.c = null;
     while(D.g != document && !D.g.classList.contains("drag")){
       D.g = D.g.parentNode;
     }
-    if(D.g == document){
-      D.g = null;
-    }
-    else if(D.g.parentNode.classList.contains("move") || D.g.parentNode.classList.contains("copy")){
-      D.X = e.touches ? e.touches[0].pageX : e.pageX;
-      D.Y = e.touches ? e.touches[0].pageY : e.pageY;
+    if(D.g != document && (D.g.parentNode.classList.contains("move") || D.g.parentNode.classList.contains("copy"))){
+      D.X = e.pageX;
+      D.Y = e.pageY;
       D.x = D.X - e.target.offsetLeft; 
       D.y = D.Y - e.target.offsetTop;
-      D.n = document.body.appendChild(D.g.cloneNode(true));
+      D.c = document.body.appendChild(D.g.cloneNode(true));
       if(D.g.parentNode.classList.contains("move")){
-        D.g.style.visibility = "hidden";
-        D.g.m = 1;
+        D.g.remove();
       }
-      D.n.style.position = "fixed";
-      D.n.style.pointerEvents = "none";
-      D.n.style.left = D.X - D.x - 8 + "px";
-      D.n.style.top = D.Y - D.y - 8 + "px";
+      D.c.style.position = "fixed";
+      D.c.style.pointerEvents = "none";
+      D.c.style.left = D.X - D.x - 8 + "px";
+      D.c.style.top = D.Y - D.y - 8 + "px";
     }
-  }
-  pointermove=e=>{
-    e.preventDefault();
-    if(D.w && D.n){
-      D.X = (e.touches ? e.touches[0].pageX : e.pageX);
-      D.Y = (e.touches ? e.touches[0].pageY : e.pageY);
-      D.n.style.left = D.X - D.x - 8 + "px";
-      D.n.style.top = D.Y - D.y - 8 + "px";
-    }
-  }
+  });
   
-  pointerup=e=>{
-    e.preventDefault();
+  addEventListener("mousemove",e=>{
+    if(D.w && D.c){
+      D.c.style.left = e.pageX - D.x - 8 + "px";
+      D.c.style.top = e.pageY - D.y - 8 + "px";
+    }
+  });
+  
+  addEventListener("mouseup",e=>{
     D.w = 0;
-    if(e.touches){
-      D.p = document.elementFromPoint(
-        D.X,
-        D.Y
-      );
-    }
-    else {
+    if(D.c){
       D.p = e.target;
-    }
-    if(D.n){
       while(D.p != document && !D.p.classList.contains("drop")){
         D.p = D.p.parentNode;
       }
       if(D.p != document){
-        D.f = D.p.appendChild(D.n.cloneNode(true));
+        D.f = D.p.appendChild(D.c.cloneNode(true));
         D.f.style.position = "";
         D.f.style.pointerEvents = "";
         D.f.style.left = "";
         D.f.style.top = "";
       }
-      D.n.remove();
-      if(D.g.m){
-        D.g.remove();
-      }
+      D.c.remove();
     }
-  }
-  addEventListener("mousedown",pointerdown);
-  addEventListener("touchstart",pointerdown);
-  addEventListener("mousemove",pointermove);
-  addEventListener("touchmove",pointermove);
-  addEventListener("mouseup",pointerup);
-  addEventListener("touchend",pointerup);
+  });
 })()
 </script>
