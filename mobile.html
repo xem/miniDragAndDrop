@@ -24,6 +24,7 @@
 
 <style>
 * { margin: 0; padding; 0; box-sizing: border-box; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none; user-select: none; touch-action: none; }
+body, html { position: fixed; }
 .drag { cursor: move;font-size: 12px; text-align: center; padding: 10px; border-radius: 50%; display: inline-block; vertical-align: top; background: #abc; width: 10vw; height: 10vw; border: 2px solid; margin: .5vw; }
 .drag span { background: #def }
 body > div { display: inline-block; vertical-align: top; width: 45vw; height: 40vh; border: 2px solid; margin: 1vw; padding: 1vw; }
@@ -109,7 +110,7 @@ body > div { display: inline-block; vertical-align: top; width: 45vw; height: 40
   addEventListener("mousedown",pointerdown);
   addEventListener("touchstart",pointerdown);
   addEventListener("mousemove",pointermove);
-  addEventListener("touchmove",pointermove);
+  addEventListener("touchmove",pointermove, {passive: false});
   addEventListener("mouseup",pointerup);
   addEventListener("touchend",pointerup);
 })()
